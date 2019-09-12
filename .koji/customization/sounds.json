@@ -1,0 +1,35 @@
+{
+  "sounds": {
+    "backgroundMusic": "https://objects.koji-cdn.com/eedc4ffb-7d04-464e-8c92-f5291d76f048/TetrisSalsa.mp3",
+    "sliceSound": "https://objects.koji-cdn.com/136bcc54-d0f5-4618-8ba9-3f771afe878b/pick.mp3",
+    "whooshSound": "https://objects.koji-cdn.com/eedc4ffb-7d04-464e-8c92-f5291d76f048/whoosh3.mp3"
+  },
+  "@@editor": [
+    {
+      "key": "sounds",
+      "name": "Sounds",
+      "icon": "🎵",
+      "source": "sounds.json",
+      "fields": [
+        {
+          "key": "backgroundMusic",
+          "name": "Background Music",
+          "description": "Background Music",
+          "type": "sound"
+        },
+        {
+          "key": "cruchSound",
+          "name": "Crunch Sound",
+          "description": "Crunch Sound",
+          "type": "sound"
+        },
+        {
+          "key": "chopSound",
+          "name": "Chop Sound",
+          "description": "Chop Sound",
+          "type": "sound"
+        }
+      ]
+    }
+  ]
+}

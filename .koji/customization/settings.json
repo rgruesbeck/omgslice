@@ -1,0 +1,63 @@
+{
+  "settings": {
+    "title": "OMG SLICE",
+    "instructions": "Slice Fruits & Veggies! OMG!! </br> dont slice the cactus",
+    "startButton": "Play!",
+    "restartButton": "Try Again!",
+    "gameoverText": "Womp womp",
+    "fontFamily": "Luckiest Guy",
+    "lives": "3"
+  },
+  "@@editor": [
+    {
+      "key": "settings",
+      "name": "Game Settings",
+      "icon": "💡",
+      "source": "settings.json",
+      "fields": [
+        {
+          "key": "title",
+          "name": "Title",
+          "description": "Title of game",
+          "type": "text"
+        },
+        {
+          "key": "instructions",
+          "name": "Instructions",
+          "description": "Game instructions",
+          "type": "text"
+        },
+        {
+          "key": "startButton",
+          "name": "Start Button Text",
+          "description": "Text for the start button",
+          "type": "text"
+        },
+        {
+          "key": "restartButton",
+          "name": "reStart Button Text",
+          "description": "Text for the restart button",
+          "type": "text"
+        },
+        {
+          "key": "gameoverText",
+          "name": "Game Over Text",
+          "description": "Text for the game-over banner",
+          "type": "text"
+        },
+        {
+          "key": "fontFamily",
+          "name": "Font Family",
+          "description": "Google web-font for the game",
+          "type": "text"
+        },
+        {
+          "key": "lives",
+          "name": "Lives",
+          "description": "Number of lives",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
