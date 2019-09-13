@@ -32,6 +32,7 @@ class GameContainer extends Component {
         this.p5Game = new p5(null, document.getElementById('game-container'));
 
         this.audioCtx = window.getAudioContext();
+
         window.noLoop();
 
         window.setOverlay = state => { this.setState(state); }

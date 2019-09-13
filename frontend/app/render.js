@@ -9,8 +9,10 @@ function renderTable({ color, w, h, d }) {
 
 function renderKnife() {
     push();
+
     rotateY(radians(-90));
-    translate(this.width * 0.5, -this.height / 4);
+    translate(this.width * 0.5, -this.height);
+
     rotate(this.r, [0, 0, 1]); // slicer angle & rotation
     translate(-this.width / 3, 0); // rotation origin: (half of width)
 

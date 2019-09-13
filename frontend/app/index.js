@@ -1,5 +1,4 @@
 // wrapped helpers
-const getCappedKnifeAngle = nonConsecutive(0, 0.001, getKnifeAngle);
 const playSound300 = throttled('300', (snd) => { snd.play(); });
 const playSound100 = throttled('100', (snd) => { snd.play(); });
 
@@ -39,11 +38,10 @@ function preload() {
         current: 'play',
         score: 0,
         lives: parseInt(Koji.config.settings.lives),
-        slicerSpeed: 6, // reduce slicerSpeed to 1 as player touches screen
+        slicerSpeed: 7, // 1 to 10
         slicerAngle: 0.6,
         slicerFrame: 0
     };
-
 }
 
 
@@ -51,8 +49,6 @@ function preload() {
 function setup() {
     // set frame and canvas size
     resizeFrame({ force: true });
-
-
 
     // create rendering context and camera
     mainContext = createCanvas(width, height, WEBGL);
@@ -69,8 +65,8 @@ function setup() {
     slicer = createSprite({
         type: 'slicer',
         image: images.slicer,
-        x: 0, y: 0, z: 0, r: 0.6,
-        width: 250, height: 250
+        x: 0, y: 0, z: 0, r: state.slicerAngle,
+        width: 250, height: 55 
     }, renderKnife);
 
     // items
@@ -168,7 +164,7 @@ function draw() {
 
     [slicer].concat(items, slices, chunks)
     .filter(a => a.active)
-    .sort((a, b) =>  a.x < b.x ? 1 : -1)
+    .sort((a, b) => a.order < b.order ? 1 : -1)
     .forEach(actor => {
         // render game objects
         actor.render();
@@ -178,17 +174,23 @@ function draw() {
             actor
             .update(a => {
                 // update slicer state
+                let angle = getKnifeAngle(0.4);
                 let canSlice = mouseIsPressed && state.current !== 'over';
                 if (canSlice) {
                     state.slicerFrame += 1;
-                    state.slicerSpeed = max(3, state.slicerSpeed - 0.05);
                     playSound300(sounds.whooshSound);
+
+                    let btm = bottomed(angle);
+                    actor.bottomed = btm;
                 } else {
-                    state.slicerSpeed = 6;
+                    if (angle < 0.8) {
+                        state.slicerFrame += 1;
+                    }
                 }
 
                 return {
-                    r: canSlice ? getCappedKnifeAngle(0.4) : 0.6
+                    r: Math.max(angle, 0),
+                    order: 0
                 }
             })
         }
@@ -201,11 +203,13 @@ function draw() {
                 let sliced;
                 let sliceRatio = Math.abs(a.x) / a.width;
                 let slicing = 
-                    slicer.r === 0 &&
                     a.x < 0 &&
-                    (a.x + a.width) > 0;
+                    (a.x + a.width) > 0 &&
+                    slicer.r === 0 &&
+                    slicer.bottomed;
 
                 if (slicing) {
+
                     sliced = sliceImage(a.image, sliceRatio);
                     slicedColor = quickColor(sliced.right);
 
@@ -258,14 +262,26 @@ function draw() {
                         state.score += Math.random() * 5 + 5;
                         setOverlay({ score: parseInt(state.score) });
                     }
+
+                    // setback half a frame
+                    let newX = 2;
+                    let newW = a.width * (1 - sliceRatio);
+
+                    return {
+                        x: newX,
+                        order: newX - a.width,
+                        image: sliced.right,
+                        width: newW
+                    };
+
+                } else {
+
+                    return {
+                        active: a.x > -500,
+                        order: a.x - a.width
+                    };
                 }
 
-                return {
-                    x: slicing ? 0 : a.x,
-                    image: slicing ? sliced.right : a.image,
-                    width: slicing ? a.width * (1 - sliceRatio) : a.width,
-                    active: a.x > -500
-                };
             })
         }
 
@@ -277,7 +293,8 @@ function draw() {
                 let onScreen = a.x > -500;
                 let gameStarted = frameCount > 90;
                 return {
-                    active: onScreen && gameStarted
+                    active: onScreen && gameStarted,
+                    order: a.x
                 };
             })
         }
@@ -292,7 +309,8 @@ function draw() {
                 y: a.y + a.vy,
                 z: a.z + a.vz,
                 r: a.r + a.vr,
-                active: onScreen && gameStarted
+                active: onScreen && gameStarted,
+                order: a.x
             };
         })
     }
@@ -327,9 +345,8 @@ function setLighting() {
 }
 
 function getKnifeAngle(c) {
-    return [cos(state.slicerFrame / state.slicerSpeed)] // original cycle
+    return [cos(state.slicerFrame / (10 / state.slicerSpeed))] // original cycle
     .map(a => a / 2) // reduce motion
     .map(a => a + c) // add constant angle
-    .map(a => Math.max(a, 0)) // nothing below 0
-    .reduce(a => a)
+    .reduce(a => a);
 }
