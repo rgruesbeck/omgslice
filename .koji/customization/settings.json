@@ -6,6 +6,7 @@
     "restartButton": "Try Again!",
     "gameoverText": "Womp womp",
     "fontFamily": "Luckiest Guy",
+    "slicerSpeed": "10",
     "lives": "3"
   },
   "@@editor": [
@@ -49,6 +50,12 @@
           "key": "fontFamily",
           "name": "Font Family",
           "description": "Google web-font for the game",
+          "type": "text"
+        },
+        {
+          "key": "slicerSpeed",
+          "name": "Slicer Speed",
+          "description": "Speed of slicer",
           "type": "text"
         },
         {

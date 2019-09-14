@@ -38,8 +38,8 @@ function preload() {
         current: 'play',
         score: 0,
         lives: parseInt(Koji.config.settings.lives),
-        slicerSpeed: 7, // 1 to 10
-        slicerAngle: 0.6,
+        slicerSpeed: parseInt(Koji.config.settings.slicerSpeed),
+        slicerAngle: 0.9,
         slicerFrame: 0
     };
 }
@@ -79,8 +79,8 @@ function setup() {
         active: false
     }, renderSlice));
 
-    // allocate chunks: 10 
-    chunks = Array.apply(null, { length: 30 })
+    // allocate chunks: 15 
+    chunks = Array.apply(null, { length: 15 })
     .map(() => createSprite({
         type: 'chunk',
         active: false,
@@ -153,7 +153,7 @@ function draw() {
             items.push(createSprite({
                 type: `item-${randomItem}`,
                 image: images[randomItem],
-                x: 2000, y: -55, z: 12, r: 0,
+                x: 2000, y: -30, z: 12, r: 0,
                 width: 150, height: 150,
                 vx: 1
             }, renderVeggie));
@@ -162,9 +162,12 @@ function draw() {
 
     renderTable({ color: colors.boardColor, w: 5000, h: 50, d: 125 });
 
+    // .sort((a, b) => a.x <= b.x ? 1 : -1)
+
     [slicer].concat(items, slices, chunks)
     .filter(a => a.active)
     .sort((a, b) => a.order < b.order ? 1 : -1)
+    .sort((a, b) => a.y - b.y)
     .forEach(actor => {
         // render game objects
         actor.render();
@@ -199,18 +202,12 @@ function draw() {
         if (actor.type.includes('item')) {
             actor.move(-5, 0, 0)
             .update(a => {
-                // slice
-                let sliced;
-                let sliceRatio = Math.abs(a.x) / a.width;
-                let slicing = 
-                    a.x < 0 &&
-                    (a.x + a.width) > 0 &&
-                    slicer.r === 0 &&
-                    slicer.bottomed;
 
-                if (slicing) {
+                if (slicer.r === 0 && slicer.bottomed && a.x < 0 && (a.x + a.width) > 0) {
 
-                    sliced = sliceImage(a.image, sliceRatio);
+                    let sliceRatio = Math.abs(a.x) / a.width;
+                    let sliced = sliceImage(a.image, sliceRatio);
+
                     slicedColor = quickColor(sliced.right);
 
                     playSound100(sounds.sliceSound);
@@ -231,11 +228,9 @@ function draw() {
                         })
                     }
 
-                    // take 15 chunks
                     // emit chunks from origin
                     chunks
                     .filter(ck => !ck.active)
-                    .filter((ck, idx) => idx < 15)
                     .forEach(ck => {
                         ck.update(c => {
                             return {
@@ -263,13 +258,12 @@ function draw() {
                         setOverlay({ score: parseInt(state.score) });
                     }
 
-                    // setback half a frame
-                    let newX = 2;
+                    // setback one frame
+                    let newX = 5;
                     let newW = a.width * (1 - sliceRatio);
 
                     return {
                         x: newX,
-                        order: newX - a.width,
                         image: sliced.right,
                         width: newW
                     };
@@ -278,7 +272,7 @@ function draw() {
 
                     return {
                         active: a.x > -500,
-                        order: a.x - a.width
+                        order: a.x + a.width
                     };
                 }
 

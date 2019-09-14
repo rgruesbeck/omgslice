@@ -32,7 +32,7 @@ function resizeFrame({
                 ],
                 */
                 // hardcoded position
-                position: [-700, -296.1726746773476, 114.5],
+                position: [-700, -296, 110],
 
                 // perspective
                 // fov:
@@ -138,6 +138,7 @@ const bottomed = (n) => {
     // detect direction change
     // n <= 0 && prev > 0
     if (n <= 0 && prev > 0) {
+        console.log('bottomed!')
         prev = n;
         return true;
     }
